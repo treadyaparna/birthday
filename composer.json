@@ -1,0 +1,19 @@
+{
+    "authors": [
+        {
+            "name": "Aparna Saha",
+            "email": "tready.aparna@gmail.com",
+            "homepage": "https://www.linkedin.com/in/aparnasaha/",
+            "role": "Software Developer"
+        }
+    ],
+    "support": {
+        "email": "tready.aparna@gmail.com"
+    },
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}
