@@ -6,44 +6,64 @@ use Exception;
 
 class JsonDataService
 {
-    public function getData()
+    /**
+     * fetch data from data file
+     *
+     * @param $filePath
+     * @return mixed
+     * @throws Exception
+     */
+    public function getData($filePath)
     {
-        // check if file exists
-        $this->isFileExists();
+        $this->isFileExists($filePath); // check if file exists
+        $data = file_get_contents($filePath); // get data
+        $this->isFileEmpty($data); // check if content exists
 
-        // get data
-        $data = file_get_contents(DATAPATH);
-
-        // check if content exists
-        $this->isContentExists();
-
-
-        $data = json_decode($data);
-
-        // valid json
-        $this->isJsonValid();
-
-        return $data;
+        return $this->isJsonValid($data); // valid json
     }
 
-    private function isFileExists()
+    /**
+     * check if file exists
+     *
+     * @param $filePath
+     * @return void
+     * @throws Exception
+     */
+    private function isFileExists($filePath)
     {
-        if (!file_exists(DATAPATH)) {
+        if (!file_exists($filePath)) {
             throw new Exception('File not found.');
         }
     }
 
-    private function isContentExists()
+    /**
+     * check if file is empty
+     *
+     * @param $data
+     * @return void
+     * @throws Exception
+     */
+    private function isFileEmpty($data)
     {
         if (isset($data) && empty($data)) {
             throw new Exception('No data.');
         }
     }
 
-    private function isJsonValid()
+    /**
+     * check if file content is a valid json
+     *
+     * @param $data
+     * @return mixed
+     * @throws Exception
+     */
+    private function isJsonValid($data)
     {
+        $data = json_decode($data);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception('Invalid data.');
         }
+
+        return $data;
     }
 }

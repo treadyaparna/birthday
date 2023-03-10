@@ -8,54 +8,63 @@ use Exception;
 class DateService
 {
     /**
-     * current datetime with time set to midnight
-     * 
-     * @var DateTime
+     * check if given date is today or not
+     *
+     * @param $birthday
+     * @return bool
      */
-    private DateTime $today;
-
-    public function __construct()
+    public function IsTodayUsersBirthday($birthday): bool
     {
-        $this->today = new DateTime("today");
+        return $birthday->format('m-d') == date('m-d');
     }
 
-    private function isLeapYear()
-    {
-        return date('L', time()) ? true : false;
-    }
-
-    public function isGivenDateIsToday($birthday)
-    {
-        $diffDays = (int) $this->today->diff($birthday)->format("%a");
-
-        return $diffDays === 0 ? true : false;
-    }
-
-    private function isDateValid($sDate, $format = 'Y/m/d')
-    {
-        $date = DateTime::createFromFormat($format, $sDate);
-
-        if ($date === false) {
-            throw new Exception('Invalid date.');
-        }
-
-        return $date;
-    }
-
-    public function getBirthday($sDate)
+    /**
+     * validate birthday and process the date if leap year
+     *
+     * @param $sDate
+     * @return DateTime
+     * @throws Exception
+     */
+    public function getBirthday($sDate): DateTime
     {
         $date = $this->isDateValid($sDate);
 
-        if ($date) {
-            // if current year is leap year
-            $isLeapYear = $this->isLeapYear();
-            if (!$isLeapYear) {
-                if ($date->format('m') == '02' && (int) $date->format('d') < 28) {
-                    $date->modify('-1 day');
-                }
+        // if current year is leap year
+        $isLeapYear = $this->isLeapYear();
+        if ($isLeapYear) {
+            if ($date->format('m') == '02' && (int)$date->format('d') == 29) {
+                $date->modify('-1 day');
             }
         }
 
         return $date;
+    }
+
+    /**
+     * check if given string date is valid date based on standard date format
+     *
+     * @param $sDate
+     * @return DateTime
+     * @throws Exception
+     */
+    private function isDateValid($sDate): DateTime
+    {
+        $date = DateTime::createFromFormat(DATE_FORMAT_IN_JSON, $sDate);
+        if ($date === false) {
+            throw new Exception('Invalid date');
+        }
+
+        $date->setTime(0, 0, 0);
+        return $date;
+    }
+
+    /**
+     * check if current year is leap year
+     *
+     * @return bool
+     */
+    private function isLeapYear(): bool
+    {
+        return (bool)date('L', time());
     }
 }
